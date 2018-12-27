@@ -77,14 +77,26 @@ for num_ex=1:m
 endfor;
 J = J/m;
   
-cost_reg_part = (sum(sum(Theta1(:,2:input_layer_size+1).^2))+sum(sum(Theta2(:,2:hidden_layer_size+1).^2)))*lambda/(2*m);
+cost_reg_part = (sum(sum(Theta1(:,2:end).^2))+sum(sum(Theta2(:,2:end).^2)))*lambda/(2*m);
 
 J = J+cost_reg_part;
 
+for num_ex=1:m
+  label = zeros(num_labels,1);
+  label(y(num_ex))=1;
+  a_1 = transpose(X(num_ex,:));
+  z_2 = Theta1*a_1;
+  a_2 = [1; sigmoid(z_2)];
+  z_3 = Theta2*a_2;
+  a_3 = sigmoid(z_3);
+  delta_3 = a_3 - label;
+  delta_2 = (transpose(Theta2)*delta_3)(2:end).*sigmoidGradient(z_2);
+  Theta1_grad = Theta1_grad + delta_2*transpose(a_1);
+  Theta2_grad = Theta2_grad + delta_3*transpose(a_2);
+endfor;
 
-
-
-
+Theta1_grad = Theta1_grad/m + [zeros(size(Theta1,1),1) Theta1(:,2:end)].*(lambda/m);
+Theta2_grad = Theta2_grad/m + [zeros(size(Theta2,1),1) Theta2(:,2:end)].*(lambda/m);
 
 
 
