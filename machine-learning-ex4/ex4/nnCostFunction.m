@@ -61,8 +61,25 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
+X = [ones(m,1) X];
+hidden_layer = X*transpose(Theta1);
+hidden_layer = [ones(m,1) sigmoid(hidden_layer)];
+output_layer = hidden_layer*transpose(Theta2);
+output_layer = sigmoid(output_layer);
 
+log_h = log(output_layer);
+log_minus_h = log(1.-output_layer);
 
+for num_ex=1:m
+  label = zeros(num_labels,1);
+  label(y(num_ex))=1;
+  J = J-log_h(num_ex,:)*label-log_minus_h(num_ex,:)*(1.-label);
+endfor;
+J = J/m;
+  
+cost_reg_part = (sum(sum(Theta1(:,2:input_layer_size+1).^2))+sum(sum(Theta2(:,2:hidden_layer_size+1).^2)))*lambda/(2*m);
+
+J = J+cost_reg_part;
 
 
 
